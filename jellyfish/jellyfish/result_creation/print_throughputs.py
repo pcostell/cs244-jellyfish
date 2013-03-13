@@ -23,7 +23,7 @@ for name in os.listdir(result_dir):
 of = file(output_file, 'w')
 for k, v in runs.items():
   of.write('============ Run %s ==============\n' % k)
-  for name in sorted(v, key=lambda key: v[key]):
-    of.write("%s ==> %0.2f%% of link bandwidth used. \n" % (name, v[name] * 100))
+  for name, percent in v.items():
+    of.write("%s ==> %0.2f%% of link bandwidth used. \n" % (name, percent * 100))
 of.write('\n')
 of.close()
