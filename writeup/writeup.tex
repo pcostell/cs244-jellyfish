@@ -1,0 +1,92 @@
+\documentclass{acm_proc_article-sp}
+
+\usepackage{pseudocode}
+
+\begin{document}
+
+\title{Evaluation of Jellyfish topology using Mininet}
+
+\numberofauthors{2} 
+\author{
+  \alignauthor
+    Patrick Costello\\
+    \affaddr{Stanford University}\\
+    \email{pcostell@stanford.edu}
+  \alignauthor
+    Lynn Cuthriell\\
+    \affaddr{Stanford University}\\
+    \email{lcuth@stanford.edu}
+}
+
+\maketitle
+\begin{abstract}
+(will fill out later)
+\end{abstract}
+
+% A category with the (minimum) three required fields
+\category{Networks}{Network performance evaluation}{Network simulations}
+
+\keywords{Jellyfish, Mininet}
+
+\section{Introduction}
+
+Data center topologies are designed specifically to handle high-bandwidth traffic
+between the machines housed together. Special topologies, such as the FatTree 
+proposed by Al-Fares et al., handle this traffic better than the standard 
+hierarchical model. FatTree topologies are capable of handling the same number of 
+hosts for roughly 16 \% of the cost of a hierarchical topology. \cite{fattree}
+
+The FatTree topology, however, does not support incremental scaling. It is impossible
+to add a single host; datacenter administrators must upgrade every single
+switch in the datacenter to one with more ports. As an example, upgrading a data
+center with 8192 nodes requires upgrading all of the existing 32-port switches
+to 48-port switches, leading to a 27648 nodes. \cite{jellyfish}
+
+
+Jellyfish, a topology proposed by Singla et al., is a new network topology
+based on random graphs. Random graphs are able to provide high throughput 
+because they have a low average path length. \cite{jellyfish}
+
+A Jellyfish topology is designed such that each host is connected to a single 
+switch. This switch is connected to all the other switches in the network using 
+a regular random graph approximation.
+
+In this paper, we explore the claims made by Singla et al. regarding the improvements
+of Jellyfish compared to FatTree topologies. We test per server throughput on 
+FatTrees using ECMP and k-shortest paths on Jellyfish. 
+
+\section{Experiment}
+\subsection{Mininet}
+In order to deploy Jellyfish on Mininet, the first step we took was to write the
+random graph construction algorithm given by Singla et al. The algorithm, as
+we have implemented, is as follows:
+\begin{enumerate}
+\item Foreach host, assign in a round robin fashion to switches
+\item While we haven't converged, choose two random switches with available ports a, b
+  \item Connect a and b
+\item Foreach switch s with $>=$ 2 free ports
+  \item Choose two random switches a, b
+  \item Disconnect a, b
+  \item Connect a, s
+  \item Connect b, s
+\end{enumerate}
+
+\subsection{Openflow}
+By default, Mininet does not deploy ECMP or any other routing algorithms that can handle loops. 
+We therefore implemented them using Openflow. We used Riplpox to create an external FatTree 
+controller for use in Mininet. However, since RiplPox assumes a FatTree topology, for Jellyfish 
+we wrote our own controller. 
+\subsubsection{ECMP}
+ECMP for FatTree is provided by RiplPox, but we needed to write our own ECMP routing module for Jellyfish.
+\subsubsection{k Shortest Paths}
+We will write a k Shortest Paths routing module for both Jellyfish and FatTree.
+\section{Results}
+\section{Conclusion}
+\section{Current Status}
+We've set up and verified the FatTree topology. We've set up the Jellyfish topology, verified it manually, and written an ECMP controller for it. It still has some bugs though.
+
+\bibliographystyle{abbrv}
+\bibliography{writeup}
+
+\balancecolumns
+\end{document}
